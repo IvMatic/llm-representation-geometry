@@ -38,7 +38,7 @@ For both pre-answer representations and both neighborhood sizes,
 the mean difference remains positive at every analyzed layer under
 each leave-one-problem-out omission.
 
-These results describe an association between representation geometry
+Results describe an association between representation geometry
 and response correctness. They do not establish a causal mechanism.
 
 ## Project status
