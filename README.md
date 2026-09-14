@@ -41,6 +41,14 @@ each leave-one-problem-out omission.
 Results describe an association between representation geometry
 and response correctness. They do not establish a causal mechanism.
 
+### Length and formatting controls
+
+The final control analysis is complete. Positive prefix Delta ID
+persists after matching length and simple formatting features,
+with smaller mean differences than the matched-count references.
+
+[View the results, figures, and limitations](results/length_shape_control/README.md)
+
 ## Project status
 
 | Analysis | Status |
