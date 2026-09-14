@@ -47,7 +47,7 @@ and response correctness. They do not establish a causal mechanism.
 |---|---|
 | MSc thesis experiments | Completed |
 | Aligned comparison of four representations | Completed |
-| Final length and formatting controls | Running |
+| Final length and formatting controls | Completed |
 | Pre-answer correctness prediction | Planned |
 
 ## Important limitations
