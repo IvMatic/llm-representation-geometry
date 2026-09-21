@@ -123,6 +123,20 @@ include zero; these ranges are not confidence intervals.
 - [Length and formatting control results](results/length_shape_control/README.md)
 - [Analysis notebooks](notebooks/README.md)
 
+
+### Neighborhood-size diagnostics
+
+The prefix intrinsic-dimension gap depends strongly on neighborhood
+size and within-problem sampling. Correct `pre_last` representations
+have more same-problem neighbors at the closest ranks, and the gap
+becomes much smaller when each problem contributes one attempt
+per class.
+
+These findings motivate a targeted test of neighborhood composition;
+they do not yet establish its causal role.
+
+[View the diagnostics and limitations](results/neighborhood_size/README.md)
+
 ## Project status
 
 | Analysis | Status |
