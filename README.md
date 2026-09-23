@@ -1,43 +1,36 @@
 # Representation Geometry of Correct and Incorrect LLM Responses
 
-An ongoing research project extending my MSc thesis on the geometry
-of transformer hidden-state representations.
+An ongoing research project extending my MSc thesis on the geometry of transformer hidden-state representations during correct and incorrect mathematical responses.
+
+The project combines intrinsic-dimension measurements, controlled comparisons, and linear correctness probes. Its aim is to understand what these measurements reveal—and what they do not establish—about model representations.
 
 ## Research questions
 
-How does the intrinsic dimension of hidden-state representations
-differ between correct and incorrect mathematical responses?
-
-Does this difference persist when representations exclude the selected
-numeric answer span and subsequent text?
-
-How does the difference change when attempts are matched for length
-and simple formatting features?
+- How does representation geometry differ between correct and incorrect responses?
+- Do these differences persist before the selected numeric answer span and after matching length and simple formatting features?
+- How do neighborhood size and same-problem neighbors affect the measured differences?
+- Can prefix representations predict correctness on held-out problems beyond simple text features?
 
 ## Experimental setup
 
 - **Model:** Phi-2
 - **Dataset:** GSM8K
-- **Representations:** full-sequence mean, final stored token,
-  prefix mean, and last prefix token
+- **Representations:** full-sequence mean, final stored token, prefix mean, and last prefix token
 - **Intrinsic-dimension estimator:** mean of local Levina–Bickel estimates
-- **Neighborhood sizes:** k = 10 and k = 20
-- **Preprocessing:** L2 normalization
+- **Primary neighborhood sizes:** k = 10 and k = 20
+- **Extended diagnostic grid:** k = 5, 8, 10, 15, 20, 30, 40
+- **ID preprocessing:** row L2 normalization
 - **Numerical computation:** direct Euclidean distances in float64
-- **Comparison:** correct and incorrect attempts matched within problems
-- **Sensitivity analysis:** leave-one-problem-out (LOPO)
-- **Additional diagnostics:** duplicate audits and descriptive
-  permutation references
+- **ID comparison:** correct and incorrect attempts matched within problems and pooled across problems
+- **Earlier sensitivity analyses:** leave-one-problem-out (LOPO), duplicate audits, and descriptive permutation references
 
-The primary quantity is:
+The primary geometric quantity is:
 
 **Delta ID = ID(incorrect) − ID(correct)**
 
-Positive Delta ID indicates higher estimated intrinsic dimension
-in the incorrect-response representation cloud.
+Positive Delta ID indicates higher estimated intrinsic dimension in the incorrect-response cloud. ID is estimated separately for the two pooled class clouds at each layer, not separately for individual matched pairs.
 
-ID is estimated separately for the two pooled class clouds at each
-layer. It is not estimated separately for individual matched pairs.
+The probe experiment uses a separate evaluation protocol described below.
 
 ## Representation definitions
 
@@ -48,53 +41,29 @@ layer. It is not estimated separately for individual matched pairs.
 | `pre_last` | Hidden-state vector immediately before the token overlapping the selected numeric answer span |
 | `pre_mean` | Mean hidden-state vector across that prefix |
 
-Mean representations include the prompt.
-
-The final stored token is not necessarily the numeric-answer token.
-A prefix may contain intermediate numbers or an earlier mention of
-the answer.
+Mean representations include the prompt. The final stored token is not necessarily the numeric-answer token. Prefixes may contain intermediate numbers or earlier mentions of the answer.
 
 ## Current findings
 
+**The positive pooled prefix ID gap survives the tested length and formatting controls, but the `pre_last` gap depends strongly on within-problem neighborhood structure.** A separate linear-probe analysis finds predictive information about correctness in prefix representations on held-out problems. These findings do not establish a causal reasoning mechanism.
+
 ### Aligned representation comparison
 
-The completed aligned comparison uses a common cohort filtered through
-a duplicate audit across all four representations and all analyzed layers.
+The aligned comparison uses a common cohort filtered through a duplicate audit across all four representations and all analyzed layers: **2,541 attempts across 129 problems**, with **397 attempts per class** in each matched draw.
 
-The cohort contains 2,541 attempts across 129 problems. Each matched
-draw contains 397 attempts per class.
+Under the original neighbor-selection procedure, mean Delta ID is positive at every analyzed layer for both prefix representations and both primary k values. It remains positive under every LOPO omission.
 
-For both prefix representations and both neighborhood sizes, mean
-Delta ID is positive at every analyzed layer and remains positive
-under every leave-one-problem-out omission.
-
-This indicates that including the selected numeric answer span and
-subsequent text is not necessary for the observed positive prefix
-difference on this filtered cohort.
+Including the selected numeric answer span and subsequent text is therefore not necessary for the observed positive prefix gap on this cohort. This observation must be interpreted alongside the neighborhood-exclusion results below.
 
 [View the aligned comparison results](results/aligned_comparison/README.md)
 
 ### Length and formatting controls
 
-The completed control analysis compares attempts within the same
-problem under three selection rules:
+The analysis matches attempts within problems using generated-prefix length, prefix length plus simple formatting features, or full-continuation length and formatting. Features capture multiple lines, arithmetic symbols, and numeric-span count categories.
 
-1. Similar generated-prefix length.
-2. Similar generated-prefix length and matching simple formatting features.
-3. Similar length and formatting of the full stored generated continuation.
+Each control has a reference with the same retained problems and per-problem attempt counts, sampled without its length or formatting constraints.
 
-Formatting features indicate multiple lines, arithmetic symbols,
-and numeric-span count categories. They do not capture all aspects
-of style or content.
-
-Each control has its own reference with the same retained problems
-and the same number of attempts per problem, sampled without the
-length or formatting constraints.
-
-The prefix-length-and-formatting control retained **120 problems**
-and **292 attempts per class**.
-
-Across layers L24–L31, the final results were:
+The prefix-length-and-formatting control retains **120 problems and 292 attempts per class**. Averaged over L24–L31 and 120 matched draws:
 
 | Representation | k | Reference Delta ID | Controlled Delta ID |
 |---|---:|---:|---:|
@@ -103,39 +72,64 @@ Across layers L24–L31, the final results were:
 | `pre_last` | 10 | 5.985 | 5.460 |
 | `pre_last` | 20 | 4.044 | 3.596 |
 
-Values average layer-level Delta ID over L24–L31 within each draw,
-then average across 120 matched draws.
-
-For this control, positive prefix differences persisted under every
-LOPO omission at all 32 layers for both neighborhood sizes.
-
-The smaller mean differences are descriptive. They do not establish
-a causal contribution of length or formatting. All reported
-late-layer adjusted-minus-reference sampling-percentile ranges
-include zero; these ranges are not confidence intervals.
+For this control, positive prefix gaps persist under every LOPO omission at all 32 layers. The reductions are descriptive, not causal estimates. The late-layer adjusted-minus-reference sampling-percentile ranges include zero and are not confidence intervals.
 
 [View the control results, figures, and limitations](results/length_shape_control/README.md)
+
+### Neighborhood-size diagnostics
+
+The `pre_last` gap decreases as k increases under the original sampling procedure. Correct `pre_last` points have substantially more same-problem neighbors at the closest ranks than incorrect points do.
+
+The gap becomes much smaller when each problem contributes only one attempt per class. This comparison changes sample size, within-problem multiplicity, and problem weighting together; it does not isolate their individual contributions.
+
+The `finals` gap remains substantial across the tested sampling caps. Its approximate stability across k refers to the L24–L31 average, not every individual layer.
+
+[View the neighborhood diagnostics](results/neighborhood_size/README.md)
+
+### Same-problem neighbor exclusion
+
+This follow-up keeps the original **397 query points per class and their weights fixed**, while changing neighbor eligibility. It compares original neighborhoods, exclusion of same-problem candidates, and exclusion of an equally sized random candidate set for each query.
+
+Twenty random-exclusion repetitions are averaged within each matched draw. Averaged over L24–L31 and 120 draws:
+
+| Representation | k | Original Delta ID | Random exclusion | Same-problem exclusion |
+|---|---:|---:|---:|---:|
+| `pre_last` | 10 | 7.510 | 7.479 | −2.838 |
+| `pre_last` | 20 | 5.610 | 5.575 | −1.486 |
+| `finals` | 10 | 6.834 | 6.836 | 5.477 |
+| `finals` | 20 | 6.981 | 6.979 | 6.272 |
+
+Same-problem exclusion raises correct `pre_last` ID much more than incorrect ID and reverses the late-layer average gap. Count-matched random exclusion leaves the gap nearly unchanged.
+
+This supports a substantial contribution of within-problem neighborhoods to the measured `pre_last` gap. Restricted-neighbor estimates describe a modified measurement procedure; the sign reversal does not establish the ordering of an underlying “true” dimension. This experiment tested `pre_last` and `finals`, not the mean representations.
+
+[View the exclusion experiment and results](results/neighbor_exclusion/README.md)
+
+### Prefix correctness prediction
+
+Linear probes at **L31** use all 2,541 retained attempts, with no further matched subsampling. Five outer folds hold out entire problems; three inner grouped folds select regularization using only outer-training data.
+
+Hidden vectors are L2-normalized, then coordinate-standardized using training data only. Baseline features measure generated-prefix length and simple formatting. Combined predictors receive both inputs.
+
+| Predictor | Mean test ROC-AUC | Mean test average precision |
+|---|---:|---:|
+| Prefix length and formatting | 0.743 | 0.389 |
+| `pre_mean` | 0.771 | 0.461 |
+| `pre_last` | 0.840 | 0.612 |
+| `pre_last` + length and formatting | 0.840 | 0.612 |
+
+These results support predictive accessibility of correctness-related information on held-out problems from this filtered cohort, particularly for `pre_last`. ROC-AUC is a ranking metric, not classification accuracy. The modest `pre_mean` ROC-AUC advantage over text features is less conclusive: its conditional resampling range includes zero.
+
+Probe performance does not establish which information is used or that the language model uses the same signal to generate its answer. Predictive performance and intrinsic dimension measure different properties.
 
 ## Repository guide
 
 - [Methodology](docs/methodology.md)
 - [Aligned comparison results](results/aligned_comparison/README.md)
-- [Length and formatting control results](results/length_shape_control/README.md)
+- [Length and formatting controls](results/length_shape_control/README.md)
+- [Neighborhood-size diagnostics](results/neighborhood_size/README.md)
+- [Same-problem neighbor exclusion](results/neighbor_exclusion/README.md)
 - [Analysis notebooks](notebooks/README.md)
-
-
-### Neighborhood-size diagnostics
-
-The prefix intrinsic-dimension gap depends strongly on neighborhood
-size and within-problem sampling. Correct `pre_last` representations
-have more same-problem neighbors at the closest ranks, and the gap
-becomes much smaller when each problem contributes one attempt
-per class.
-
-These findings motivate a targeted test of neighborhood composition;
-they do not yet establish its causal role.
-
-[View the diagnostics and limitations](results/neighborhood_size/README.md)
 
 ## Project status
 
@@ -143,51 +137,41 @@ they do not yet establish its causal role.
 |---|---|
 | MSc thesis experiments | Completed |
 | Aligned comparison of four representations | Completed |
-| Final length and formatting controls | Completed |
-| Pre-answer correctness prediction | Planned |
+| Length and formatting controls | Completed |
+| Prefix correctness probes with feature baselines | Completed |
+| Neighborhood-size and sampling-cap diagnostics | Completed |
+| Same-problem neighbor exclusion | Completed |
+| Explanation of the content underlying same-problem grouping | Open |
 | Reproduction from a fresh environment | Not yet verified |
 
 ## Important limitations
 
-- Findings describe associations between representation geometry and
-  correctness; they do not establish causal mechanisms.
-- The aligned analysis uses a cohort filtered through a duplicate audit.
-  Conclusions do not automatically extend to the unfiltered attempt
-  distribution.
-- Prefixes end before the selected numeric span but may contain earlier
-  answer mentions or answer-relevant information.
-- Length and formatting controls match only specified features.
-  Lexical content, reasoning structure, and other differences remain.
-- Different controls can retain different problem sets.
-- Full-continuation controls use text generated after the prefix and
-  are not controls based solely on information available before the answer.
-- Results depend on representation choice and neighborhood size.
-  Positive findings for prefix representations should not be generalized
-  to every representation and layer.
-- Sampling percentiles and LOPO ranges are not confidence intervals.
-  Permutation references are descriptive; no formal p-values are reported.
-- Float64 computation cannot recover precision lost when representations
-  were originally stored in float16.
-- Predictive generalization has not yet been established.
+- Findings do not establish causal mechanisms of model reasoning. Neighbor exclusion changes the measurement procedure, not model computation.
+- The `pre_last` ID gap depends strongly on problem-level neighborhood structure. Its original positive value should not be interpreted as independent of problem grouping.
+- The cohort was filtered through a duplicate audit. Conclusions do not automatically extend to the unfiltered attempt distribution.
+- Prefixes may contain earlier answer mentions or other answer-relevant information. Correctness labels follow the existing numerical-answer extraction procedure.
+- Length and formatting controls cover only selected features. Lexical content, reasoning structure, and other differences remain.
+- Different controls retain different problem sets. Full-continuation controls use text generated after the prefix.
+- Results depend on representation, layer, neighborhood size, and sampling design.
+- Sampling percentiles and LOPO ranges are not confidence intervals. Earlier permutation references are descriptive, with no formal p-values reported. Probe resampling ranges are conditional on fitted predictions and do not capture full retraining uncertainty.
+- Float64 computation cannot recover precision lost when representations were stored in float16.
+- The analyses and follow-up hypotheses were developed using this dataset. Held-out-problem probe evaluation does not establish generalization to other models or datasets.
 
 ## Reproducibility
 
-Analysis notebooks and selected result tables are available in this
-repository.
+Analysis notebooks and selected result tables are being organized in this repository. The notebooks currently require representation caches and metadata stored on Google Drive; these inputs are not included here. Environment and data preparation instructions are being documented.
 
-The notebooks currently require representation caches and metadata
-stored on Google Drive. These inputs are not included in the repository.
-Environment and data preparation instructions are being documented.
+Protocols differ by notebook:
 
-Both notebooks default to QUICK mode. The length-control notebook
-additionally defaults to audit-only execution with `RUN_ID=False`.
+| Notebook | FINAL protocol |
+|---|---|
+| 13: aligned comparison | 120 matched draws, 80 descriptive permutation draws, LOPO |
+| 15: length and formatting controls | 120 matched draws, 80 descriptive permutation draws, LOPO |
+| 16: prefix probes | 5 outer grouped folds, 3 inner grouped folds, 1,000 conditional problem resamples |
+| 17: neighborhood diagnostics | 120 matched draws, extended k grid and nested sampling caps |
+| 18: neighbor exclusion | 120 matched draws, 20 random-exclusion repetitions per draw |
 
-FINAL analyses use 120 matched draws and 80 descriptive permutation
-draws. Checkpoints support resuming completed portions of an analysis.
-
-The default notebook settings do not indicate the status of separately
-completed research runs. Refer to the result manifests for the settings
-used to produce published tables.
+The notebooks include QUICK execution modes and checkpoints. Some default to audit-only execution; follow their individual instructions. Default settings do not indicate the status of separately completed research runs. Refer to result manifests for the settings used to produce reported tables.
 
 Reproduction from a fresh environment has not yet been verified.
 
@@ -195,9 +179,6 @@ Reproduction from a fresh environment has not yet been verified.
 
 This project builds on my MSc thesis:
 
-*Geometric Analysis of Hidden-State Representations in Transformer
-Models During Correct and Incorrect Reasoning.*
+*Geometric Analysis of Hidden-State Representations in Transformer Models During Correct and Incorrect Reasoning.*
 
-The extension investigates whether correctness-associated geometric
-differences persist under prefix restrictions and within-problem
-length and formatting controls.
+The extension investigates how correctness-associated geometric measurements depend on representation choice, text properties, and neighborhood structure, alongside a separate evaluation of predictive information in prefix representations.
