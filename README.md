@@ -122,6 +122,18 @@ These results support predictive accessibility of correctness-related informatio
 
 Probe performance does not establish which information is used or that the language model uses the same signal to generate its answer. Predictive performance and intrinsic dimension measure different properties.
 
+### Prefix text similarity and representation distance
+
+Across 88 problems, correct–correct pairs have closer `pre_last`
+representations and more similar generated-prefix text than
+incorrect–incorrect pairs. Greater suffix similarity is associated
+with smaller vector distances within problems.
+
+These descriptive findings motivate endpoint and suffix controls;
+they do not establish a causal reasoning mechanism.
+
+[View the analysis, figures, and limitations](results/prefix_text_similarity/README.md)
+
 ## Repository guide
 
 - [Methodology](docs/methodology.md)
