@@ -19,7 +19,7 @@ Why are correct attempts from the same problem particularly close in `pre_last`?
 
 `pre_last` is the hidden state immediately before the token overlapping the selected numeric answer span. Its context includes the prompt. Text-similarity features use only the generated prefix, excluding the shared prompt. Prefixes can contain earlier numeric values and answer mentions.
 
-This notebook measures **pair distances**, not intrinsic dimension or classifier performance. No matching on text features is applied here.
+Notebook measures **pair distances**, not intrinsic dimension or classifier performance. No matching on text features is applied here.
 
 ## Representation distances
 
