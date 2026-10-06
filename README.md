@@ -175,6 +175,8 @@ explained. The control matches suffix-overlap scores rather than
 complete suffix wording; broader lexical similarity, length,
 numeric content, and reasoning-related information may still differ.
 
+[View the endpoint and suffix control results](results/endpoint_suffix_control/README.md)
+
 ## Repository guide
 
 - [Methodology](docs/methodology.md)
@@ -183,6 +185,7 @@ numeric content, and reasoning-related information may still differ.
 - [Neighborhood-size diagnostics](results/neighborhood_size/README.md)
 - [Same-problem neighbor exclusion](results/neighbor_exclusion/README.md)
 - [Prefix text similarity and representation distance](results/prefix_text_similarity/README.md)
+- [Endpoint and suffix controls](results/endpoint_suffix_control/README.md)
 - [Analysis notebooks](notebooks/README.md)
 
 ## Project status
