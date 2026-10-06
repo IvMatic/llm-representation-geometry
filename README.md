@@ -134,6 +134,47 @@ they do not establish a causal reasoning mechanism.
 
 [View the analysis, figures, and limitations](results/prefix_text_similarity/README.md)
 
+### Endpoint and suffix controls
+
+Notebook 20 tests whether correct–correct pairs remain closer when
+endpoint token identities and measured suffix overlap are balanced
+against incorrect–incorrect pairs within the same problem.
+
+The analysis reuses Notebook 19's pair distances. It changes pair
+weights, not hidden-state vectors or individual distances. Each
+retained problem receives equal weight.
+
+The strongest control balances the unordered pair of endpoint token
+identities, the number of consecutive matching trailing tokens
+(up to eight), and the compared suffix-window length.
+
+This control retains **60 problems**, with **257 correct–correct
+pairs and 573 incorrect–incorrect pairs** receiving positive weight.
+The reference uses all original pairs from those same 60 problems.
+
+Averaged over L24–L31:
+
+| Measurement | Same-problem reference | After endpoint and suffix control |
+|---|---:|---:|
+| Correct–correct pair distance | 0.6890 | 0.7207 |
+| Incorrect–incorrect pair distance | 1.1176 | 0.9535 |
+| Distance gap: incorrect minus correct | 0.4286 | 0.2328 |
+
+The mean distance gap is approximately **45.7% smaller** after
+control. The adjusted mean gap remains positive at all 32 layers.
+Correct pairs remain closer in **51 of the 60 problems**, using
+each problem's L24–L31 average.
+
+These results show that the geometric contrast is sensitive to
+endpoint and suffix conditions, but persists on the retained cohort
+after balancing those measured properties.
+
+This is a **pair-distance analysis, not an intrinsic-dimension
+estimate**. The reduction is descriptive, not a causal percentage
+explained. The control matches suffix-overlap scores rather than
+complete suffix wording; broader lexical similarity, length,
+numeric content, and reasoning-related information may still differ.
+
 ## Repository guide
 
 - [Methodology](docs/methodology.md)
@@ -141,6 +182,7 @@ they do not establish a causal reasoning mechanism.
 - [Length and formatting controls](results/length_shape_control/README.md)
 - [Neighborhood-size diagnostics](results/neighborhood_size/README.md)
 - [Same-problem neighbor exclusion](results/neighbor_exclusion/README.md)
+- [Prefix text similarity and representation distance](results/prefix_text_similarity/README.md)
 - [Analysis notebooks](notebooks/README.md)
 
 ## Project status
@@ -182,6 +224,8 @@ Protocols differ by notebook:
 | 16: prefix probes | 5 outer grouped folds, 3 inner grouped folds, 1,000 conditional problem resamples |
 | 17: neighborhood diagnostics | 120 matched draws, extended k grid and nested sampling caps |
 | 18: neighbor exclusion | 120 matched draws, 20 random-exclusion repetitions per draw |
+| 19: prefix text similarity | All within-class pairs from 88 problems; equal problem weighting; all 32 layers |
+| 20: endpoint and suffix controls | Reuse Notebook 19 distances; three within-problem weighting controls; strongest control retains 60 problems |
 
 The notebooks include QUICK execution modes and checkpoints. Some default to audit-only execution; follow their individual instructions. Default settings do not indicate the status of separately completed research runs. Refer to result manifests for the settings used to produce reported tables.
 
