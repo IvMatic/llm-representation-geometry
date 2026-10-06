@@ -76,6 +76,23 @@ For this control, positive prefix gaps persist under every LOPO omission at all 
 
 [View the control results, figures, and limitations](results/length_shape_control/README.md)
 
+### Prefix correctness prediction
+
+Linear probes at **L31** use all 2,541 retained attempts, with no further matched subsampling. Five outer folds hold out entire problems; three inner grouped folds select regularization using only outer-training data.
+
+Hidden vectors are L2-normalized, then coordinate-standardized using training data only. Baseline features measure generated-prefix length and simple formatting. Combined predictors receive both inputs.
+
+| Predictor | Mean test ROC-AUC | Mean test average precision |
+|---|---:|---:|
+| Prefix length and formatting | 0.743 | 0.389 |
+| `pre_mean` | 0.771 | 0.461 |
+| `pre_last` | 0.840 | 0.612 |
+| `pre_last` + length and formatting | 0.840 | 0.612 |
+
+These results support predictive accessibility of correctness-related information on held-out problems from this filtered cohort, particularly for `pre_last`. ROC-AUC is a ranking metric, not classification accuracy. The modest `pre_mean` ROC-AUC advantage over text features is less conclusive: its conditional resampling range includes zero.
+
+Probe performance does not establish which information is used or that the language model uses the same signal to generate its answer. Predictive performance and intrinsic dimension measure different properties.
+
 ### Neighborhood-size diagnostics
 
 The `pre_last` gap decreases as k increases under the original sampling procedure. Correct `pre_last` points have substantially more same-problem neighbors at the closest ranks than incorrect points do.
@@ -104,23 +121,6 @@ Same-problem exclusion raises correct `pre_last` ID much more than incorrect ID 
 This supports a substantial contribution of within-problem neighborhoods to the measured `pre_last` gap. Restricted-neighbor estimates describe a modified measurement procedure; the sign reversal does not establish the ordering of an underlying “true” dimension. This experiment tested `pre_last` and `finals`, not the mean representations.
 
 [View the exclusion experiment and results](results/neighbor_exclusion/README.md)
-
-### Prefix correctness prediction
-
-Linear probes at **L31** use all 2,541 retained attempts, with no further matched subsampling. Five outer folds hold out entire problems; three inner grouped folds select regularization using only outer-training data.
-
-Hidden vectors are L2-normalized, then coordinate-standardized using training data only. Baseline features measure generated-prefix length and simple formatting. Combined predictors receive both inputs.
-
-| Predictor | Mean test ROC-AUC | Mean test average precision |
-|---|---:|---:|
-| Prefix length and formatting | 0.743 | 0.389 |
-| `pre_mean` | 0.771 | 0.461 |
-| `pre_last` | 0.840 | 0.612 |
-| `pre_last` + length and formatting | 0.840 | 0.612 |
-
-These results support predictive accessibility of correctness-related information on held-out problems from this filtered cohort, particularly for `pre_last`. ROC-AUC is a ranking metric, not classification accuracy. The modest `pre_mean` ROC-AUC advantage over text features is less conclusive: its conditional resampling range includes zero.
-
-Probe performance does not establish which information is used or that the language model uses the same signal to generate its answer. Predictive performance and intrinsic dimension measure different properties.
 
 ### Prefix text similarity and representation distance
 
