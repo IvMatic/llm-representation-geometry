@@ -1,0 +1,4 @@
+control,problems_before,retained_problems,shared_strata,overlap_mass,CC_pairs_positive_weight,II_pairs_positive_weight
+endpoint_equality,88,88,126,631.0,987,6320
+endpoint_identity,88,68,94,220.0,427,1311
+endpoint_identity_suffix,88,60,87,158.0,257,573
