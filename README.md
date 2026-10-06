@@ -198,21 +198,66 @@ numeric content, and reasoning-related information may still differ.
 | Prefix correctness probes with feature baselines | Completed |
 | Neighborhood-size and sampling-cap diagnostics | Completed |
 | Same-problem neighbor exclusion | Completed |
-| Explanation of the content underlying same-problem grouping | Open |
+| Prefix text similarity and representation distances | Completed |
+| Endpoint token identity and suffix-overlap controls | Completed |
+| Explanation of the residual distance gap after text controls | Open |
 | Reproduction from a fresh environment | Not yet verified |
 
 ## Important limitations
 
-- Findings do not establish causal mechanisms of model reasoning. Neighbor exclusion changes the measurement procedure, not model computation.
-- The `pre_last` ID gap depends strongly on problem-level neighborhood structure. Its original positive value should not be interpreted as independent of problem grouping.
-- The cohort was filtered through a duplicate audit. Conclusions do not automatically extend to the unfiltered attempt distribution.
-- Prefixes may contain earlier answer mentions or other answer-relevant information. Correctness labels follow the existing numerical-answer extraction procedure.
-- Length and formatting controls cover only selected features. Lexical content, reasoning structure, and other differences remain.
-- Different controls retain different problem sets. Full-continuation controls use text generated after the prefix.
-- Results depend on representation, layer, neighborhood size, and sampling design.
-- Sampling percentiles and LOPO ranges are not confidence intervals. Earlier permutation references are descriptive, with no formal p-values reported. Probe resampling ranges are conditional on fitted predictions and do not capture full retraining uncertainty.
-- Float64 computation cannot recover precision lost when representations were stored in float16.
-- The analyses and follow-up hypotheses were developed using this dataset. Held-out-problem probe evaluation does not establish generalization to other models or datasets.
+- Findings establish associations and sensitivity to controls,
+  not causal mechanisms of model reasoning. Neighbor exclusion
+  changes the measurement procedure, not model computation.
+
+- The `pre_last` ID gap depends strongly on problem-level
+  neighborhood structure. Its original positive value should
+  not be interpreted as independent of problem grouping.
+
+- Pair distance and intrinsic dimension measure different
+  geometric properties. Reductions in the pair-distance gap
+  do not quantify how much of the ID gap is explained.
+
+- The cohort was filtered through a duplicate audit.
+  Conclusions do not automatically extend to the unfiltered
+  attempt distribution.
+
+- Prefixes may contain earlier answer mentions or other
+  answer-relevant information. Correctness labels follow
+  the existing numerical-answer extraction procedure.
+
+- Length, formatting, endpoint, and suffix controls cover
+  selected text properties. The suffix control balances
+  measured overlap rather than complete suffix wording.
+  Broader lexical content, numeric information, and
+  reasoning structure may still differ between classes.
+
+- Different controls retain different problem sets.
+  The strongest endpoint/suffix control retains 60 of
+  the 88 pair-analysis problems. Its reference uses those
+  same 60 problems. Full-continuation controls use text
+  generated after the prefix.
+
+- Pairs share attempts and are not independent observations.
+  Equal problem weighting does not remove this dependence.
+  Pair analyses report no independent-pair confidence
+  intervals or significance tests.
+
+- Results depend on representation, layer, neighborhood size,
+  sampling design, and the available overlap between classes
+  under the matching conditions.
+
+- Sampling percentiles and LOPO ranges are not confidence
+  intervals. Earlier permutation references are descriptive.
+  Probe resampling ranges are conditional on fitted predictions
+  and do not capture full retraining uncertainty.
+
+- Float64 computation cannot recover precision lost when
+  representations were stored in float16.
+
+- The analyses and follow-up hypotheses were developed using
+  this dataset. Held-out-problem probe evaluation does not
+  establish generalization to other models or datasets.
+  Reproduction from a fresh environment remains unverified.
 
 ## Reproducibility
 
